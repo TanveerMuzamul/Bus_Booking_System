@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management | Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        .admin-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .admin-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .nav-btn.active {
+            background: #764ba2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .role-admin {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .role-user {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .logout {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .logout a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .logout a:hover {
+            text-decoration: underline;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .contact-info {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h1>👥 User Management</h1>
+            <p>Manage user accounts and permissions</p>
+        </div>
+
+        <div class="admin-nav">
+            <a href="/admin/dashboard" class="nav-btn">🚌 Manage Buses</a>
+            <a href="/admin/users" class="nav-btn active">👥 Manage Users</a>
+            <a href="/admin/requests" class="nav-btn">📋 User Requests</a>
+        </div>
+
+        <div th:if="${success}" class="message success" th:text="${success}"></div>
+        <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${users.size()}">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${users.?[role == 'ADMIN'].size()}">0</div>
+                <div class="stat-label">Admin Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${users.?[role == 'USER'].size()}">0</div>
+                <div class="stat-label">Regular Users</div>
+            </div>
+        </div>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email} ?: 'Not set'"></td>
+                <td class="contact-info" th:text="${user.phoneNumber} ?: 'Not set'"></td>
+                <td>
+                    <span th:if="${user.role == 'ADMIN'}" class="role-admin">ADMIN</span>
+                    <span th:if="${user.role == 'USER'}" class="role-user">USER</span>
+                </td>
+                <td class="action-btns">
+                    <a th:href="@{'/admin/edit-user/' + ${user.id}}" class="btn btn-edit">✏️ Edit</a>
+                    <a th:href="@{'/admin/delete-user/' + ${user.id}}" class="btn btn-delete" 
+                       onclick="return confirm('Are you sure you want to delete this user?')">🗑 Delete</a>
+                </td>
+            </tr>
+        </table>
+
+        <div class="logout">
+            <a href="/login">🚪 Logout</a>
+        </div>
+    </div>
+</body>
+</html>
