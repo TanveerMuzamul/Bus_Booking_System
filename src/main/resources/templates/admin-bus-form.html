@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Bus | Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ff6b6b;
+            padding-bottom: 10px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #ff6b6b;
+            outline: none;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .nav-link {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #ff6b6b;
+            border-radius: 5px;
+        }
+        .nav-link:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h3>🧑‍💼 Admin Panel - Bus Management</h3>
+        </div>
+
+        <h2 th:text="${bus.id != null} ? '✏️ Edit Bus Details' : '➕ Add New Bus'"></h2>
+        
+        <div th:if="${success}" class="message success" th:text="${success}"></div>
+        <div th:if="${error}" class="message error" th:text="${error}"></div>
+        
+        <form th:action="@{/admin/save-bus}" method="post">
+            <input type="hidden" th:name="id" th:value="${bus.id}">
+            
+            <div class="form-section">
+                <h3>Basic Information</h3>
+                <div class="form-group">
+                    <label>Bus Name:</label>
+                    <input type="text" th:name="busName" th:value="${bus.busName}" placeholder="e.g., CityLink Express" required>
+                </div>
+                
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Source:</label>
+                        <select th:name="source" required>
+                            <option value="">Select Source</option>
+                            <option th:each="location : ${locations}" 
+                                    th:value="${location}" 
+                                    th:selected="${bus.source == location}"
+                                    th:text="${location}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label>Destination:</label>
+                        <select th:name="destination" required>
+                            <option value="">Select Destination</option>
+                            <option th:each="location : ${locations}" 
+                                    th:value="${location}" 
+                                    th:selected="${bus.destination == location}"
+                                    th:text="${location}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Schedule & Timing</h3>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Departure Time:</label>
+                        <input type="time" name="departureTime" th:value="${bus.departureTime}" required>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label>Arrival Time:</label>
+                        <input type="time" name="arrivalTime" th:value="${bus.arrivalTime}" required>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Start Date (Service Start):</label>
+                        <input type="date" name="startDate" th:value="${bus.startDate}" required>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label>End Date (Service End):</label>
+                        <input type="date" name="endDate" th:value="${bus.endDate}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Operating Days</h3>
+                <div class="checkbox-group">
+                    <div th:each="day : ${daysOfWeek}" class="checkbox-item">
+                        <input type="checkbox" name="operatingDays" th:value="${day}" 
+                               th:checked="${bus.operatingDays != null && bus.operatingDays.contains(day)}">
+                        <label th:text="${day}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Pricing & Capacity</h3>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Seats Available:</label>
+                        <input type="number" th:name="seats" th:value="${bus.seats}" min="1" max="100" required>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label>Price (€):</label>
+                        <input type="number" step="0.01" th:name="price" th:value="${bus.price}" min="0" required>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label>Bus Type:</label>
+                        <select th:name="busType" required>
+                            <option value="">Select Type</option>
+                            <option th:each="type : ${busTypes}" 
+                                    th:value="${type}" 
+                                    th:selected="${bus.busType == type}"
+                                    th:text="${type}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">💾 Save Bus Details</button>
+        </form>
+        
+        <div class="navigation">
+            <a href="/admin/dashboard" class="nav-link">← Back to Bus Dashboard</a>
+            <a href="/admin/users" class="nav-link">👥 Manage Users →</a>
+        </div>
+    </div>
+</body>
+</html>
