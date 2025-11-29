@@ -27,39 +27,72 @@ public class Bus {
     private LocalDate endDate;
     private String operatingDays; // e.g., "MON,TUE,WED,THU,FRI,SAT,SUN"
 
-    public Bus() {}
+    // Builder pattern to avoid too many constructor parameters
+    public static class BusBuilder {
+        private String busName;
+        private String source;
+        private String destination;
+        private LocalTime departureTime = LocalTime.of(9, 0);
+        private LocalTime arrivalTime = LocalTime.of(12, 0);
+        private int seats = 50;
+        private double price = 25.0;
+        private String busType = "STANDARD";
 
-    // Default constructor with reduced parameters to fix SonarQube issue
-    public Bus(String busName, String source, String destination) {
-        this.busName = busName;
-        this.source = source;
-        this.destination = destination;
-        this.departureTime = LocalTime.of(9, 0);
-        this.arrivalTime = LocalTime.of(12, 0);
-        this.seats = 50;
-        this.price = 25.0;
-        this.busType = "STANDARD";
-        this.startDate = LocalDate.now();
-        this.endDate = LocalDate.now().plusYears(1);
-        this.operatingDays = "MON,TUE,WED,THU,FRI,SAT,SUN";
+        public BusBuilder(String busName, String source, String destination) {
+            this.busName = busName;
+            this.source = source;
+            this.destination = destination;
+        }
+
+        public BusBuilder departureTime(LocalTime departureTime) {
+            this.departureTime = departureTime;
+            return this;
+        }
+
+        public BusBuilder arrivalTime(LocalTime arrivalTime) {
+            this.arrivalTime = arrivalTime;
+            return this;
+        }
+
+        public BusBuilder seats(int seats) {
+            this.seats = seats;
+            return this;
+        }
+
+        public BusBuilder price(double price) {
+            this.price = price;
+            return this;
+        }
+
+        public BusBuilder busType(String busType) {
+            this.busType = busType;
+            return this;
+        }
+
+        public Bus build() {
+            Bus bus = new Bus();
+            bus.busName = this.busName;
+            bus.source = this.source;
+            bus.destination = this.destination;
+            bus.departureTime = this.departureTime;
+            bus.arrivalTime = this.arrivalTime;
+            bus.seats = this.seats;
+            bus.price = this.price;
+            bus.busType = this.busType;
+            bus.startDate = LocalDate.now();
+            bus.endDate = LocalDate.now().plusYears(1);
+            bus.operatingDays = "MON,TUE,WED,THU,FRI,SAT,SUN";
+            return bus;
+        }
     }
 
-    // Full constructor with builder pattern approach - FIXED: Using @SuppressWarnings for existing code
-    @SuppressWarnings("java:S107") // Suppress "Constructor has too many parameters" warning for existing functionality
-    public Bus(String busName, String source, String destination, LocalTime departureTime, 
-               LocalTime arrivalTime, int seats, double price, String busType) {
-        this.busName = busName;
-        this.source = source;
-        this.destination = destination;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-        this.seats = seats;
-        this.price = price;
-        this.busType = busType;
-        this.startDate = LocalDate.now();
-        this.endDate = LocalDate.now().plusYears(1);
-        this.operatingDays = "MON,TUE,WED,THU,FRI,SAT,SUN";
+    // Static factory method for builder
+    public static BusBuilder builder(String busName, String source, String destination) {
+        return new BusBuilder(busName, source, destination);
     }
+
+    // Existing constructor for backward compatibility - use builder instead
+    private Bus() {}
 
     // Getters and Setters
     public Long getId() { return id; }

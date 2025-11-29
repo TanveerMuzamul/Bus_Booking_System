@@ -185,10 +185,13 @@ public class BusController {
                 return REDIRECT_BOOK + busId + "?" + USERNAME_ATTRIBUTE + "=" + username + "&travelDate=" + travelDate;
             }
 
-            // Create cart item
-            Cart cart = new Cart(username, busId, bus.getBusName(), bus.getSource(),
-                    bus.getDestination(), travelDate, passengers,
-                    bus.getPrice() * passengers);
+            Cart cart = Cart.builder(username, busId, bus.getBusName())
+                    .source(bus.getSource())
+                    .destination(bus.getDestination())
+                    .travelDate(travelDate)
+                    .passengers(passengers)
+                    .totalPrice(bus.getPrice() * passengers)
+                    .build();
 
             cartService.addToCart(cart);
             logger.info("Added to cart successfully");
