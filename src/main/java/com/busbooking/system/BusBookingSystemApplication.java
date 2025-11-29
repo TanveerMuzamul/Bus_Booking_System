@@ -1,33 +1,36 @@
 package com.busbooking.system;
+
 import com.busbooking.system.model.Bus;
-//SONARQUBE FIX - FORCE RECOGNITION OF LOGGER IMPLEMENTATION
-//All System.out.println statements have been replaced with logger.info()
-//This includes: database initialization messages, bus creation, user creation
-//Logger configuration: SLF4J with proper imports and class-level declaration
-//This commit should force SonarQube to reanalyze the complete logger implementation
 import com.busbooking.system.model.User;
 import com.busbooking.system.repository.BusRepository;
 import com.busbooking.system.repository.UserRepository;
 import com.busbooking.system.service.UserService;
-// Logger imports for replacing System.out statements as per SonarQube recommendations
+
+// Logger imports - SonarQube compliant logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
 import java.time.LocalTime;
 import java.time.LocalDate;
 
+/**
+ * Bus Booking System Application
+ * SONARQUBE FIX: All System.out replaced with logger
+ */
 @SpringBootApplication
 public class BusBookingSystemApplication {
-    // Logger instance to replace System.out for better logging practices
+    
+    // Logger instance - SonarQube compliant
     private static final Logger logger = LoggerFactory.getLogger(BusBookingSystemApplication.class);
     
     public static void main(String[] args) {
         SpringApplication.run(BusBookingSystemApplication.class, args);
-        // Using logger instead of System.out for application startup message
         logger.info("🚀 Bus Booking System started on http://localhost:8080");
     }
 
@@ -36,10 +39,8 @@ public class BusBookingSystemApplication {
                                   @Autowired UserRepository userRepo,
                                   @Autowired UserService userService) {
         return args -> {
-            // Database initialization process - using logger for all output messages
             logger.info("🧹 Checking database...");
             
-            // Add default buses
             if (busRepo.count() == 0) {
                 logger.info("🚌 Adding demo buses...");
                 
@@ -80,13 +81,10 @@ public class BusBookingSystemApplication {
                 logger.info("✅ Buses already exist: {}", busRepo.count());
             }
 
-            // Add default users - FIXED: Clear and recreate to ensure admin exists
             logger.info("👤 Checking users...");
             
-            // Clear existing users to avoid duplicates
             userRepo.deleteAll();
             
-            // Add default user
             User user = new User();
             user.setUsername("user");
             user.setPassword("user123");
@@ -95,7 +93,6 @@ public class BusBookingSystemApplication {
             user.setRole("USER");
             userRepo.save(user);
 
-            // Add default admin
             User admin = new User();
             admin.setUsername("admin");
             admin.setPassword("admin123");
@@ -106,7 +103,6 @@ public class BusBookingSystemApplication {
 
             logger.info("✅ Added {} demo users!", userRepo.count());
 
-            // Print verifications
             userService.printAllUsers();
             
             logger.info("🎉 Database initialization completed successfully!");
