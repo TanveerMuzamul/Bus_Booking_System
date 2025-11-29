@@ -4,6 +4,8 @@ import com.busbooking.system.model.Booking;
 import com.busbooking.system.model.Bus;
 import com.busbooking.system.service.BookingService;
 import com.busbooking.system.service.BusService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,8 @@ import java.util.List;
 @RequestMapping("/admin")
 public class BookingManagementController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BookingManagementController.class);
+
     @Autowired
     private BookingService bookingService;
 
@@ -33,10 +37,10 @@ public class BookingManagementController {
         try {
             List<Booking> bookings = bookingService.getAllBookings();
             model.addAttribute("bookings", bookings);
-            System.out.println("✅ Loaded " + bookings.size() + " bookings for management");
+            logger.info("Loaded {} bookings for management", bookings.size());
             return "admin-bookings";
         } catch (Exception e) {
-            System.out.println("❌ Error loading bookings: " + e.getMessage());
+            logger.error("Error loading bookings: {}", e.getMessage());
             model.addAttribute("error", "Error loading bookings: " + e.getMessage());
             return "admin-bookings";
         }
@@ -63,10 +67,10 @@ public class BookingManagementController {
             List<Bus> buses = busService.getAllBuses();
             model.addAttribute("booking", booking);
             model.addAttribute("buses", buses);
-            System.out.println("✅ Loaded booking for editing: " + booking.getId());
+            logger.info("Loaded booking for editing: {}", booking.getId());
             return "admin-edit-booking";
         } catch (Exception e) {
-            System.out.println("❌ Error loading booking: " + e.getMessage());
+            logger.error("Error loading booking: {}", e.getMessage());
             return "redirect:/admin/bookings?error=Error loading booking";
         }
     }
@@ -82,10 +86,7 @@ public class BookingManagementController {
                                @RequestParam("status") String status,
                                Model model) {
         try {
-            System.out.println("🔄 Starting booking update...");
-            System.out.println("📝 Parameters - Booking ID: " + bookingId + ", Bus ID: " + busId + 
-                             ", Travel Date: " + travelDate + ", Passengers: " + passengers + 
-                             ", Status: " + status);
+            logger.info("Starting booking update");
             
             // Workaround to find booking
             List<Booking> allBookings = bookingService.getAllBookings();
@@ -95,7 +96,7 @@ public class BookingManagementController {
                     .orElse(null);
                     
             if (booking == null) {
-                System.out.println("❌ Booking not found with ID: " + bookingId);
+                logger.error("Booking not found with ID: {}", bookingId);
                 return "redirect:/admin/bookings?error=Booking not found!";
             }
 
@@ -104,9 +105,9 @@ public class BookingManagementController {
                 booking.setBusName(bus.getBusName());
                 booking.setSource(bus.getSource());
                 booking.setDestination(bus.getDestination());
-                System.out.println("✅ Bus updated: " + bus.getBusName());
+                logger.info("Bus updated: {}", bus.getBusName());
             } else {
-                System.out.println("⚠️ Bus not found with ID: " + busId);
+                logger.warn("Bus not found with ID: {}", busId);
             }
 
             booking.setTravelDate(LocalDate.parse(travelDate));
@@ -116,20 +117,19 @@ public class BookingManagementController {
             if (bus != null) {
                 double totalPrice = bus.getPrice() * passengers;
                 booking.setTotalPrice(totalPrice);
-                System.out.println("💰 Total price calculated: €" + totalPrice);
+                logger.info("Total price calculated: €{}", totalPrice);
             }
             
             booking.setStatus(status);
 
             // Save the updated booking
             Booking updatedBooking = bookingService.saveBooking(booking);
-            System.out.println("✅ Booking updated successfully: " + updatedBooking.getId());
+            logger.info("Booking updated successfully: {}", updatedBooking.getId());
             
             return "redirect:/admin/bookings?success=Booking updated successfully!";
             
         } catch (Exception e) {
-            System.out.println("❌ Error updating booking: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error updating booking: {}", e.getMessage());
             return "redirect:/admin/bookings?error=Error updating booking: " + e.getMessage();
         }
     }
