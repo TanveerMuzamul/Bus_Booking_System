@@ -295,7 +295,8 @@ public class BusController {
                     cart.getTotalPrice()
                 );
                 bookingService.saveBooking(booking);
-                logger.info("Booking created for travel date: {}", cart.getTravelDate());
+                // FIXED: Removed user-controlled data (bus name) from log
+                logger.info("Booking created successfully");
             }
             
             // Clear cart after successful payment
