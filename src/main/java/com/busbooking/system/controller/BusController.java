@@ -332,7 +332,7 @@ public class BusController {
             logger.info("Loading bookings");
             
             List<Booking> bookings = bookingService.getBookingsByUser(username);
-            logger.info("Found {} bookings", bookings.size());
+            logger.info("Bookings loaded successfully");
             
             model.addAttribute(BOOKINGS_ATTRIBUTE, bookings);
             model.addAttribute(USERNAME_ATTRIBUTE, username);

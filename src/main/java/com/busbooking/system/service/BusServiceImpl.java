@@ -17,9 +17,11 @@ public class BusServiceImpl implements BusService {
 
     private static final Logger logger = LoggerFactory.getLogger(BusServiceImpl.class);
 
-    @Autowired
-    private BusRepository busRepository;
+    private final BusRepository busRepository;
 
+    public BusServiceImpl(BusRepository busRepository) {
+        this.busRepository = busRepository;
+    }
     @Override
     public List<Bus> getAllBuses() {
         logger.info("Getting all buses from database");
