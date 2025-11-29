@@ -2,6 +2,8 @@ package com.busbooking.system.service;
 
 import com.busbooking.system.model.User;
 import com.busbooking.system.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,12 +12,17 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    
+    private static final String ROLE_LABEL = ", Role: ";
+    private static final String USER_DETAILS_PREFIX = "User details - Username: ";
+
     @Autowired
     private UserRepository userRepository;
 
     @Override
     public boolean validateUser(String username, String password) {
-        System.out.println("🔍 Validating user: " + username);
+        logger.info("Validating user: {}", username);
         
         try {
             // Method 1: Try findFirstByUsername
@@ -23,8 +30,8 @@ public class UserServiceImpl implements UserService {
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 boolean passwordMatch = user.getPassword().equals(password);
-                System.out.println("✅ User found via findFirstByUsername - Password match: " + passwordMatch);
-                System.out.println("👤 User details - Username: " + user.getUsername() + ", Role: " + user.getRole());
+                logger.info("User found via findFirstByUsername - Password match: {}", passwordMatch);
+                logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                 return passwordMatch;
             }
             
@@ -33,8 +40,8 @@ public class UserServiceImpl implements UserService {
             if (!users.isEmpty()) {
                 User user = users.get(0);
                 boolean passwordMatch = user.getPassword().equals(password);
-                System.out.println("✅ User found via findByUsername - Password match: " + passwordMatch);
-                System.out.println("👤 User details - Username: " + user.getUsername() + ", Role: " + user.getRole());
+                logger.info("User found via findByUsername - Password match: {}", passwordMatch);
+                logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                 return passwordMatch;
             }
             
@@ -43,32 +50,30 @@ public class UserServiceImpl implements UserService {
             for (User user : allUsers) {
                 if (user.getUsername().equals(username)) {
                     boolean passwordMatch = user.getPassword().equals(password);
-                    System.out.println("✅ User found via findAll - Password match: " + passwordMatch);
-                    System.out.println("👤 User details - Username: " + user.getUsername() + ", Role: " + user.getRole());
+                    logger.info("User found via findAll - Password match: {}", passwordMatch);
+                    logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                     return passwordMatch;
                 }
             }
             
-            System.out.println("❌ User not found: " + username);
+            logger.info("User not found: {}", username);
             return false;
             
         } catch (Exception e) {
-            System.out.println("❌ Error validating user: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error validating user: {}", e.getMessage());
             return false;
         }
     }
 
-    // ... rest of your existing UserServiceImpl methods remain the same
     @Override
     public void saveUser(User user) {
         try {
-            System.out.println("💾 Saving user: " + user.getUsername());
+            logger.info("Saving user: {}", user.getUsername());
             
             // For existing users, allow saving without duplicate check
             if (user.getId() != null) {
                 userRepository.save(user);
-                System.out.println("✅ Existing user updated");
+                logger.info("Existing user updated");
                 return;
             }
             
@@ -84,10 +89,10 @@ public class UserServiceImpl implements UserService {
             }
             
             userRepository.save(user);
-            System.out.println("✅ New user saved successfully");
+            logger.info("New user saved successfully");
             
         } catch (Exception e) {
-            System.out.println("❌ Error saving user: " + e.getMessage());
+            logger.error("Error saving user: {}", e.getMessage());
             throw e;
         }
     }
@@ -133,15 +138,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void printAllUsers() {
         List<User> users = userRepository.findAll();
-        System.out.println("====== ALL USERS IN DATABASE ======");
+        logger.info("====== ALL USERS IN DATABASE ======");
         for (User user : users) {
-            System.out.println("ID: " + user.getId() + 
-                             ", Username: " + user.getUsername() + 
-                             ", Password: " + user.getPassword() + 
-                             ", Email: " + user.getEmail() +
-                             ", Phone: " + user.getPhoneNumber() +
-                             ", Role: " + user.getRole());
+            logger.info("ID: {}, Username: {}, Email: {}, Phone: {}, Role: {}", 
+                       user.getId(), user.getUsername(), user.getEmail(),
+                       user.getPhoneNumber(), user.getRole());
         }
-        System.out.println("===================================");
+        logger.info("===================================");
     }
 }
