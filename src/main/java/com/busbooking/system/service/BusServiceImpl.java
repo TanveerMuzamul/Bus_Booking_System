@@ -40,7 +40,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<Bus> searchBuses(String source, String destination, String date) {
-        // FIXED: Removed user-controlled data (source, destination, date) from log
+        // SECURITY FIX: Removed user-controlled data (source, destination, date) from log
         logger.info("Searching buses");
         
         // SIMPLIFIED SEARCH - Just filter by source and destination for now
@@ -88,7 +88,7 @@ public class BusServiceImpl implements BusService {
                 .map(Bus::getSource)
                 .distinct()
                 .toList();
-        // FIXED: Removed user-controlled data from log
+        // SECURITY FIX: Removed user-controlled data from log
         logger.info("Retrieved available sources");
         return sources;
     }
@@ -99,7 +99,7 @@ public class BusServiceImpl implements BusService {
                 .map(Bus::getDestination)
                 .distinct()
                 .toList();
-        // FIXED: Removed user-controlled data from log
+        // SECURITY FIX: Removed user-controlled data from log
         logger.info("Retrieved available destinations");
         return destinations;
     }

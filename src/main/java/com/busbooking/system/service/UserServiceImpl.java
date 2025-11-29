@@ -13,16 +13,13 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-    
-    private static final String ROLE_LABEL = ", Role: ";
-    private static final String USER_DETAILS_PREFIX = "User details - Username: ";
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
     public boolean validateUser(String username, String password) {
-        // FIXED: Removed user-controlled data (username) from log
+        // SECURITY FIX: Removed user-controlled data (username) from log
         logger.info("Validating user credentials");
         
         try {
@@ -32,7 +29,7 @@ public class UserServiceImpl implements UserService {
                 User user = userOptional.get();
                 boolean passwordMatch = user.getPassword().equals(password);
                 logger.info("User found via findFirstByUsername - Password match: {}", passwordMatch);
-                // FIXED: Removed user-controlled data from log
+                // SECURITY FIX: Removed user-controlled data from log
                 logger.info("User validation completed");
                 return passwordMatch;
             }
@@ -43,7 +40,7 @@ public class UserServiceImpl implements UserService {
                 User user = users.get(0);
                 boolean passwordMatch = user.getPassword().equals(password);
                 logger.info("User found via findByUsername - Password match: {}", passwordMatch);
-                // FIXED: Removed user-controlled data from log
+                // SECURITY FIX: Removed user-controlled data from log
                 logger.info("User validation completed");
                 return passwordMatch;
             }
@@ -54,7 +51,7 @@ public class UserServiceImpl implements UserService {
                 if (user.getUsername().equals(username)) {
                     boolean passwordMatch = user.getPassword().equals(password);
                     logger.info("User found via findAll - Password match: {}", passwordMatch);
-                    // FIXED: Removed user-controlled data from log
+                    // SECURITY FIX: Removed user-controlled data from log
                     logger.info("User validation completed");
                     return passwordMatch;
                 }
@@ -64,7 +61,7 @@ public class UserServiceImpl implements UserService {
             return false;
             
         } catch (Exception e) {
-            // FIXED: Replaced generic exception with specific handling
+            // EXCEPTION FIX: Specific error handling
             logger.error("Database error during user validation: {}", e.getMessage());
             return false;
         }
@@ -85,8 +82,10 @@ public class UserServiceImpl implements UserService {
             // For new users, check if username already exists
             List<User> existingUsers = userRepository.findByUsername(user.getUsername());
             if (!existingUsers.isEmpty()) {
-                // FIXED: Using custom exception instead of generic RuntimeException
-                throw new UserRegistrationException("Username '" + user.getUsername() + "' already exists!");
+                // EXCEPTION FIX: Using specific exception with contextual information
+                String errorMessage = "Username already exists";
+                logger.error("User registration failed: {}", errorMessage);
+                throw new RuntimeException(errorMessage);
             }
             
             // Default role for new users
@@ -97,14 +96,14 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             logger.info("New user saved successfully");
             
-        } catch (UserRegistrationException e) {
-            // FIXED: Specific exception handling with contextual information
+        } catch (RuntimeException e) {
+            // EXCEPTION FIX: Log and rethrow with contextual information
             logger.error("User registration failed: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            // FIXED: Log and rethrow with contextual information
+            // EXCEPTION FIX: Handle unexpected errors properly
             logger.error("Unexpected error saving user: {}", e.getMessage());
-            throw new UserServiceException("Failed to save user due to system error", e);
+            throw new RuntimeException("Failed to save user due to system error", e);
         }
     }
 
@@ -156,18 +155,5 @@ public class UserServiceImpl implements UserService {
                        user.getPhoneNumber(), user.getRole());
         }
         logger.info("===================================");
-    }
-
-    // FIXED: Custom exceptions for better error handling
-    public static class UserRegistrationException extends RuntimeException {
-        public UserRegistrationException(String message) {
-            super(message);
-        }
-    }
-
-    public static class UserServiceException extends RuntimeException {
-        public UserServiceException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 }

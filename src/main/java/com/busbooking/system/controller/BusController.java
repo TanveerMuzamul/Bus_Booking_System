@@ -185,13 +185,10 @@ public class BusController {
                 return REDIRECT_BOOK + busId + "?" + USERNAME_ATTRIBUTE + "=" + username + "&travelDate=" + travelDate;
             }
 
-            Cart cart = Cart.builder(username, busId, bus.getBusName())
-                    .source(bus.getSource())
-                    .destination(bus.getDestination())
-                    .travelDate(travelDate)
-                    .passengers(passengers)
-                    .totalPrice(bus.getPrice() * passengers)
-                    .build();
+            // Create cart item
+            Cart cart = new Cart(username, busId, bus.getBusName(), bus.getSource(),
+                    bus.getDestination(), travelDate, passengers,
+                    bus.getPrice() * passengers);
 
             cartService.addToCart(cart);
             logger.info("Added to cart successfully");
@@ -265,7 +262,7 @@ public class BusController {
         return PAYMENT_VIEW;
     }
 
-    // Process payment
+    // Process payment - FIXED: Removed user-controlled data from logs
     @PostMapping("/process-payment")
     public String processPayment(@RequestParam String username,
                                @RequestParam double total,
@@ -298,7 +295,7 @@ public class BusController {
                     cart.getTotalPrice()
                 );
                 bookingService.saveBooking(booking);
-                // FIXED: Removed user-controlled data (bus name) from log
+                // SECURITY FIX: Removed user-controlled data (bus name and travel date) from log
                 logger.info("Booking created successfully");
             }
             
@@ -306,7 +303,7 @@ public class BusController {
             cartService.clearCart(username);
             logger.info("Cart cleared successfully");
             
-            // Log successful payment - removed user-controlled data (username)
+            // Log successful payment - SECURITY FIX: Removed username from log
             logger.info("Payment Successful - Amount: €{}, Method: {}, Tickets: {}", 
                        total, paymentMethod, cartItems.size());
             

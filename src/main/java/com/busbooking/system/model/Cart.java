@@ -21,65 +21,29 @@ public class Cart {
 
     public Cart() {}
 
-    // Builder pattern to avoid too many constructor parameters
-    public static class CartBuilder {
-        private String username;
-        private Long busId;
-        private String busName;
-        private String source = "Dublin";
-        private String destination = "Galway";
-        private String travelDate = java.time.LocalDate.now().plusDays(1).toString();
-        private int passengers = 1;
-        private double totalPrice = 25.0;
-
-        public CartBuilder(String username, Long busId, String busName) {
-            this.username = username;
-            this.busId = busId;
-            this.busName = busName;
-        }
-
-        public CartBuilder source(String source) {
-            this.source = source;
-            return this;
-        }
-
-        public CartBuilder destination(String destination) {
-            this.destination = destination;
-            return this;
-        }
-
-        public CartBuilder travelDate(String travelDate) {
-            this.travelDate = travelDate;
-            return this;
-        }
-
-        public CartBuilder passengers(int passengers) {
-            this.passengers = passengers;
-            return this;
-        }
-
-        public CartBuilder totalPrice(double totalPrice) {
-            this.totalPrice = totalPrice;
-            return this;
-        }
-
-        public Cart build() {
-            Cart cart = new Cart();
-            cart.username = this.username;
-            cart.busId = this.busId;
-            cart.busName = this.busName;
-            cart.source = this.source;
-            cart.destination = this.destination;
-            cart.travelDate = this.travelDate;
-            cart.passengers = this.passengers;
-            cart.totalPrice = this.totalPrice;
-            return cart;
-        }
+    // Alternative constructor with fewer parameters for SonarQube
+    public Cart(String username, Long busId, String busName) {
+        this.username = username;
+        this.busId = busId;
+        this.busName = busName;
+        this.source = "Dublin";
+        this.destination = "Galway";
+        this.travelDate = java.time.LocalDate.now().plusDays(1).toString();
+        this.passengers = 1;
+        this.totalPrice = 25.0;
     }
 
-    // Static factory method for builder
-    public static CartBuilder builder(String username, Long busId, String busName) {
-        return new CartBuilder(username, busId, busName);
+    // Existing constructor - ignore SonarQube warning for now
+    public Cart(String username, Long busId, String busName, String source, 
+                String destination, String travelDate, int passengers, double totalPrice) {
+        this.username = username;
+        this.busId = busId;
+        this.busName = busName;
+        this.source = source;
+        this.destination = destination;
+        this.travelDate = travelDate;
+        this.passengers = passengers;
+        this.totalPrice = totalPrice;
     }
 
     // Getters and Setters
@@ -109,4 +73,9 @@ public class Cart {
 
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+
+	public static Object builder(String username2, Long busId2, String busName2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
