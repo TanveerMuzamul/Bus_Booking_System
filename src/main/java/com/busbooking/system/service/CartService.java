@@ -1,5 +1,8 @@
 package com.busbooking.system.service;
-
+/**
+ * Service interface for shopping cart operations
+ * Manages cart items, totals, and user cart sessions
+ */
 import com.busbooking.system.model.Cart;
 import java.util.List;
 
