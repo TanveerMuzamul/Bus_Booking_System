@@ -1,5 +1,5 @@
 package com.busbooking.system;
-//SonarQube fix: Replaced System.out with logger - commit 5072ec6
+//SONARQUBE FIX: All System.out statements replaced with logger - Force update
 import com.busbooking.system.model.Bus;
 import com.busbooking.system.model.User;
 import com.busbooking.system.repository.BusRepository;
