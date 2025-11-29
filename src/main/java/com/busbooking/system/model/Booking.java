@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 @Table(name = "booking")
 public class Booking {
 
+    // Constant for duplicate string literal
+    public static final String STATUS_CONFIRMED = "CONFIRMED";
+    public static final String PAYMENT_STATUS_PAID = "PAID";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,8 +24,8 @@ public class Booking {
     private LocalDateTime bookingDate;
     private int passengers;
     private double totalPrice;
-    private String status = "CONFIRMED";
-    private String paymentStatus = "PAID";
+    private String status = STATUS_CONFIRMED;
+    private String paymentStatus = PAYMENT_STATUS_PAID;
     
     // Add this new field for admin notes
     @Column(length = 1000)
@@ -40,8 +44,8 @@ public class Booking {
         this.bookingDate = LocalDateTime.now();
         this.passengers = passengers;
         this.totalPrice = totalPrice;
-        this.status = "CONFIRMED";
-        this.paymentStatus = "PAID";
+        this.status = STATUS_CONFIRMED;
+        this.paymentStatus = PAYMENT_STATUS_PAID;
     }
 
     // Keep the old constructor for backward compatibility
@@ -54,8 +58,8 @@ public class Booking {
         this.bookingDate = LocalDateTime.now();
         this.passengers = 1;
         this.totalPrice = 0.0;
-        this.status = "CONFIRMED";
-        this.paymentStatus = "PAID";
+        this.status = STATUS_CONFIRMED;
+        this.paymentStatus = PAYMENT_STATUS_PAID;
     }
 
     // Getters and Setters
