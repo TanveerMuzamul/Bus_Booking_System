@@ -102,7 +102,7 @@ public class BusBookingSystemApplication {
 
             logger.info("✅ Added {} demo users!", userRepo.count());
 
-            // Print verification
+            // Print verifications
             userService.printAllUsers();
             
             logger.info("🎉 Database initialization completed successfully!");
