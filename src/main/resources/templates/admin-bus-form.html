@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xml:lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Manage Bus | Admin</title>
@@ -20,7 +20,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         h2 {
-            color: #333;
+            color: #333333;
             text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #ff6b6b;
@@ -29,7 +29,7 @@
         .admin-header {
             text-align: center;
             margin-bottom: 20px;
-            color: #666;
+            color: #666666;
         }
         .form-group {
             margin-bottom: 20px;
@@ -38,12 +38,12 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            color: #555;
+            color: #555555;
         }
         input, select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 2px solid #dddddd;
             border-radius: 8px;
             font-size: 16px;
             box-sizing: border-box;
@@ -65,11 +65,11 @@
             background: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #dddddd;
         }
         .btn {
             background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
-            color: white;
+            color: #ffffff;
             padding: 15px 30px;
             border: none;
             border-radius: 8px;
@@ -97,7 +97,7 @@
         }
         .nav-link:hover {
             background: #ff6b6b;
-            color: white;
+            color: #ffffff;
         }
         .form-section {
             background: #f8f9fa;
@@ -107,8 +107,8 @@
         }
         .form-section h3 {
             margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #ddd;
+            color: #333333;
+            border-bottom: 1px solid #dddddd;
             padding-bottom: 10px;
         }
         .message {
@@ -146,14 +146,14 @@
             <div class="form-section">
                 <h3>Basic Information</h3>
                 <div class="form-group">
-                    <label>Bus Name:</label>
-                    <input type="text" th:name="busName" th:value="${bus.busName}" placeholder="e.g., CityLink Express" required>
+                    <label for="busName">Bus Name:</label>
+                    <input type="text" id="busName" th:name="busName" th:value="${bus.busName}" placeholder="e.g., CityLink Express" required>
                 </div>
                 
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Source:</label>
-                        <select th:name="source" required>
+                        <label for="source">Source:</label>
+                        <select id="source" th:name="source" required>
                             <option value="">Select Source</option>
                             <option th:each="location : ${locations}" 
                                     th:value="${location}" 
@@ -163,8 +163,8 @@
                     </div>
                     
                     <div class="form-group" style="flex: 1;">
-                        <label>Destination:</label>
-                        <select th:name="destination" required>
+                        <label for="destination">Destination:</label>
+                        <select id="destination" th:name="destination" required>
                             <option value="">Select Destination</option>
                             <option th:each="location : ${locations}" 
                                     th:value="${location}" 
@@ -179,25 +179,25 @@
                 <h3>Schedule & Timing</h3>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Departure Time:</label>
-                        <input type="time" name="departureTime" th:value="${bus.departureTime}" required>
+                        <label for="departureTime">Departure Time:</label>
+                        <input type="time" id="departureTime" name="departureTime" th:value="${bus.departureTime}" required>
                     </div>
                     
                     <div class="form-group" style="flex: 1;">
-                        <label>Arrival Time:</label>
-                        <input type="time" name="arrivalTime" th:value="${bus.arrivalTime}" required>
+                        <label for="arrivalTime">Arrival Time:</label>
+                        <input type="time" id="arrivalTime" name="arrivalTime" th:value="${bus.arrivalTime}" required>
                     </div>
                 </div>
                 
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Start Date (Service Start):</label>
-                        <input type="date" name="startDate" th:value="${bus.startDate}" required>
+                        <label for="startDate">Start Date (Service Start):</label>
+                        <input type="date" id="startDate" name="startDate" th:value="${bus.startDate}" required>
                     </div>
                     
                     <div class="form-group" style="flex: 1;">
-                        <label>End Date (Service End):</label>
-                        <input type="date" name="endDate" th:value="${bus.endDate}" required>
+                        <label for="endDate">End Date (Service End):</label>
+                        <input type="date" id="endDate" name="endDate" th:value="${bus.endDate}" required>
                     </div>
                 </div>
             </div>
@@ -206,9 +206,9 @@
                 <h3>Operating Days</h3>
                 <div class="checkbox-group">
                     <div th:each="day : ${daysOfWeek}" class="checkbox-item">
-                        <input type="checkbox" name="operatingDays" th:value="${day}" 
+                        <input type="checkbox" id="day-${day}" name="operatingDays" th:value="${day}" 
                                th:checked="${bus.operatingDays != null && bus.operatingDays.contains(day)}">
-                        <label th:text="${day}"></label>
+                        <label for="day-${day}" th:text="${day}"></label>
                     </div>
                 </div>
             </div>
@@ -217,18 +217,18 @@
                 <h3>Pricing & Capacity</h3>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Seats Available:</label>
-                        <input type="number" th:name="seats" th:value="${bus.seats}" min="1" max="100" required>
+                        <label for="seats">Seats Available:</label>
+                        <input type="number" id="seats" th:name="seats" th:value="${bus.seats}" min="1" max="100" required>
                     </div>
                     
                     <div class="form-group" style="flex: 1;">
-                        <label>Price (€):</label>
-                        <input type="number" step="0.01" th:name="price" th:value="${bus.price}" min="0" required>
+                        <label for="price">Price (€):</label>
+                        <input type="number" id="price" step="0.01" th:name="price" th:value="${bus.price}" min="0" required>
                     </div>
                     
                     <div class="form-group" style="flex: 1;">
-                        <label>Bus Type:</label>
-                        <select th:name="busType" required>
+                        <label for="busType">Bus Type:</label>
+                        <select id="busType" th:name="busType" required>
                             <option value="">Select Type</option>
                             <option th:each="type : ${busTypes}" 
                                     th:value="${type}" 
