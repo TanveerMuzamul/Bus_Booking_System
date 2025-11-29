@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Buses | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .search-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .search-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-btn:hover {
+            background: #5a6fd8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #5a6fd8;
+            text-decoration: none;
+            color: white;
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .navigation a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .no-buses {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            👤 Welcome, <span th:text="${username}"></span>
+        </div>
+
+        <h2>🚌 Available CityLink Buses</h2>
+
+        <div class="search-box">
+            <form th:action="@{/buses}" method="get" class="search-form">
+                <input type="hidden" name="username" th:value="${username}">
+                
+                <div class="form-group">
+                    <label>From:</label>
+                    <select name="source">
+                        <option value="">All Sources</option>
+                        <option th:each="location : ${locations}" 
+                                th:value="${location}" 
+                                th:selected="${selectedSource == location}"
+                                th:text="${location}"></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>To:</label>
+                    <select name="destination">
+                        <option value="">All Destinations</option>
+                        <option th:each="location : ${locations}" 
+                                th:value="${location}" 
+                                th:selected="${selectedDestination == location}"
+                                th:text="${location}"></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" name="date" th:value="${selectedDate}">
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="search-btn">🔍 Search Buses</button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${buses.empty}">
+            <div class="no-buses">
+                <h3>🚫 No Buses Available</h3>
+                <p>Sorry, no buses match your search criteria.</p>
+                <p>Try adjusting your search filters or check back later.</p>
+            </div>
+        </div>
+
+        <div th:unless="${buses.empty}">
+            <table>
+                <tr>
+                    <th>Bus Name</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Seats</th>
+                    <th>Price (€)</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+                <tr th:each="bus : ${buses}">
+                    <td th:text="${bus.busName}"></td>
+                    <td th:text="${bus.source}"></td>
+                    <td th:text="${bus.destination}"></td>
+                    <td th:text="${bus.departureTime}"></td>
+                    <td th:text="${bus.arrivalTime}"></td>
+                    <td th:text="${bus.seats}"></td>
+                    <td>€<span th:text="${#numbers.formatDecimal(bus.price, 1, 2)}"></span></td>
+                    <td th:text="${bus.busType}"></td>
+                    <td>
+                        <a th:href="@{'/book/' + ${bus.id} + '?username=' + ${username}}" class="button">🎫 Book Now</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="navigation">
+            <a th:href="@{'/my-bookings?username=' + ${username}}">📖 View My Bookings</a> |
+            <a th:href="@{'/cart?username=' + ${username}}">🛒 View Cart</a> |
+            <a th:href="@{'/request-form?username=' + ${username}}">📝 Contact Admin</a> |
+            <a href="/login">🚪 Logout</a>
+        </div>
+    </div>
+</body>
+</html>

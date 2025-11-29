@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmed | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 80px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #27ae60;
+        }
+        .booking-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .booking-details h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .security-notice {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            border-left: 4px solid #2196f3;
+        }
+        .ticket-info {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h2>Payment Successful!</h2>
+        
+        <div class="message">
+            <strong>Your booking has been confirmed successfully!</strong>
+        </div>
+        
+        <div class="booking-details">
+            <h3>Booking Information</h3>
+            <p><strong>User:</strong> <span th:text="${username}"></span></p>
+            <p><strong>Total Paid:</strong> €<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></p>
+            <p><strong>Payment Method:</strong> <span th:text="${paymentMethod}"></span></p>
+            <p><strong>Tickets Booked:</strong> <span th:text="${bookingCount}"></span></p>
+            <p><strong>Confirmation Date:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span></p>
+        </div>
+
+        <div class="ticket-info">
+            <strong>📧 A confirmation email has been sent to your registered email address.</strong>
+            <p>Your e-tickets are available in your bookings section.</p>
+        </div>
+        
+        <p>Thank you for choosing CityLink Bus Service. Have a pleasant journey!</p>
+        
+        <div>
+            <a th:href="@{'/my-bookings?username=' + ${username}}" class="btn">View My Bookings</a>
+            <a th:href="@{'/buses?username=' + ${username}}" class="btn">Book Another Trip</a>
+        </div>
+        
+        <div class="security-notice">
+            🔒 Your booking is confirmed and secure. Reference: <strong th:text="${'CL' + #temporals.format(#temporals.createNow(), 'yyyyMMddHHmm')}"></strong>
+        </div>
+    </div>
+</body>
+</html>

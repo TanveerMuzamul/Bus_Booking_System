@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Requests | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .requests-empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 2px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .navigation a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+        .message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            👤 Welcome, <span th:text="${username}"></span>
+        </div>
+
+        <h2>📋 My Requests</h2>
+
+        <div th:if="${message}" class="message" th:text="${message}"></div>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a th:href="@{'/request-form?username=' + ${username}}" class="btn">➕ Submit New Request</a>
+        </div>
+
+        <div th:if="${requests.empty}">
+            <div class="requests-empty">
+                <h3>No requests found</h3>
+                <p>You haven't submitted any requests yet.</p>
+                <a th:href="@{'/request-form?username=' + ${username}}" class="btn">Submit Your First Request</a>
+            </div>
+        </div>
+
+        <div th:unless="${requests.empty}">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Admin Response</th>
+                    <th>Submitted</th>
+                </tr>
+                <tr th:each="request : ${requests}">
+                    <td th:text="${request.id}"></td>
+                    <td th:text="${request.requestType.replace('_', ' ')}"></td>
+                    <td th:text="${request.description}"></td>
+                    <td>
+                        <span th:if="${request.status == 'PENDING'}" class="status-pending">PENDING</span>
+                        <span th:if="${request.status == 'APPROVED'}" class="status-approved">APPROVED</span>
+                        <span th:if="${request.status == 'REJECTED'}" class="status-rejected">REJECTED</span>
+                    </td>
+                    <td th:text="${request.adminResponse ?: 'No response yet'}"></td>
+                    <td th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="navigation">
+            <a th:href="@{'/buses?username=' + ${username}}">← Back to Buses</a> |
+            <a th:href="@{'/my-bookings?username=' + ${username}}">View My Bookings</a> |
+            <a href="/login">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

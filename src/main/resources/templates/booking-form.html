@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Bus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bus-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba87e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .price-calculation {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid #28a745;
+        }
+        .total-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎫 Book Your Bus</h2>
+        
+        <div class="bus-info">
+            <h3 th:text="${bus.busName}"></h3>
+            <p><strong>Route:</strong> <span th:text="${bus.source}"></span> to <span th:text="${bus.destination}"></span></p>
+            <p><strong>Departure:</strong> <span th:text="${bus.departureTime}"></span></p>
+            <p><strong>Arrival:</strong> <span th:text="${bus.arrivalTime}"></span></p>
+            <p><strong>Price per person:</strong> €<span th:text="${bus.price}"></span></p>
+            <p><strong>Available Seats:</strong> <span th:text="${bus.seats}"></span></p>
+        </div>
+
+        <form th:action="@{/add-to-cart}" method="post">
+            <input type="hidden" name="busId" th:value="${bus.id}">
+            <input type="hidden" name="username" th:value="${username}">
+            
+            <div class="form-group">
+                <label>Travel Date:</label>
+                <input type="date" name="travelDate" th:value="${travelDate}" id="travelDate" required min="">
+            </div>
+            
+            <div class="form-group">
+                <label>Number of Passengers:</label>
+                <select name="passengers" id="passengers" required onchange="calculatePrice()">
+                    <option value="1">1 Passenger</option>
+                    <option value="2">2 Passengers</option>
+                    <option value="3">3 Passengers</option>
+                    <option value="4">4 Passengers</option>
+                    <option value="5">5 Passengers</option>
+                </select>
+            </div>
+
+            <div class="price-calculation">
+                <div>Total Price: <span class="total-price" id="totalPrice">€<span th:text="${bus.price}"></span></span></div>
+            </div>
+            
+            <button type="submit" class="btn">🛒 Add to Cart</button>
+        </form>
+
+        <a th:href="@{'/buses?username=' + ${username}}" class="back-link">← Back to Buses</a>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('travelDate');
+            if (dateInput) {
+                dateInput.min = today;
+                if (!dateInput.value) {
+                    dateInput.value = today;
+                }
+            }
+            calculatePrice();
+        });
+
+        function calculatePrice() {
+            const passengers = document.getElementById('passengers').value;
+            const pricePerPerson = <span th:text="${bus.price}">0</span>;
+            const totalPrice = passengers * pricePerPerson;
+            document.getElementById('totalPrice').textContent = '€' + totalPrice.toFixed(2);
+        }
+    </script>
+</body>
+</html>

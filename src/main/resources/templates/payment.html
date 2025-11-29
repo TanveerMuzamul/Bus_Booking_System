@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .order-summary {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .order-summary h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+        .btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba87e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background: linear-gradient(135deg, #d1e7ff 0%, #e8d4f5 100%);
+            transform: translateY(-2px);
+        }
+        .security-notice {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #2d5016;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #dc3545;
+        }
+        .card-details {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>💳 Complete Your Payment</h2>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <p><strong>Total Amount:</strong> €<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></p>
+            <p><strong>Items:</strong> <span th:text="${cartItems.size()}"></span> ticket(s)</p>
+            <p><strong>User:</strong> <span th:text="${username}"></span></p>
+        </div>
+
+        <!-- SIMPLIFIED PAYMENT FORM -->
+        <form th:action="@{/process-payment}" method="post">
+            <input type="hidden" name="username" th:value="${username}">
+            <input type="hidden" name="total" th:value="${total}">
+            <input type="hidden" name="paymentMethod" value="credit-card">
+            
+            <div class="form-group">
+                <label>Payment Method:</label>
+                <select name="paymentMethodSelect" onchange="updatePaymentMethod(this)">
+                    <option value="credit-card">💳 Credit Card</option>
+                    <option value="debit-card">💳 Debit Card</option>
+                    <option value="paypal">💰 PayPal</option>
+                </select>
+            </div>
+
+            <div class="card-details">
+                <div class="form-group">
+                    <label>Card Number:</label>
+                    <input type="text" name="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date:</label>
+                        <input type="text" name="expiryDate" placeholder="MM/YY" required maxlength="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>CVV:</label>
+                        <input type="text" name="cvv" placeholder="123" required maxlength="3">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cardholder Name:</label>
+                    <input type="text" name="cardName" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">✅ Pay Now - €<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></button>
+        </form>
+
+        <div class="security-notice">
+            🔒 Your payment is secure and encrypted. We use SSL encryption to protect your data.
+        </div>
+
+        <a th:href="@{'/cart?username=' + ${username}}" class="back-link">← Back to Cart</a>
+    </div>
+
+    <script>
+        function updatePaymentMethod(select) {
+            document.querySelector('input[name="paymentMethod"]').value = select.value;
+        }
+
+        // Format card number with spaces
+        document.querySelector('input[name="cardNumber"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ');
+            e.target.value = formattedValue || value;
+        });
+
+        // Format expiry date
+        document.querySelector('input[name="expiryDate"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Only allow numbers for CVV
+        document.querySelector('input[name="cvv"]').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    </script>
+</body>
+</html>
