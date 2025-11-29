@@ -84,7 +84,7 @@ public class BusController {
     // User Dashboard - FIXED: Added this method
     @GetMapping("/dashboard")
     public String userDashboard(@RequestParam String username, Model model) {
-        logger.info("Loading user dashboard for: {}", username);
+        logger.info("Loading user dashboard");
         model.addAttribute(USERNAME_ATTRIBUTE, username);
         return DASHBOARD_VIEW;
     }
@@ -97,12 +97,12 @@ public class BusController {
                            @RequestParam String username,
                            Model model) {
         
-        logger.info("Loading buses page for user: {}", username);
+        logger.info("Loading buses page");
         
         try {
             List<Bus> buses;
             if (source != null && !source.isEmpty() && destination != null && !destination.isEmpty()) {
-                logger.info("Performing search from {} to {} on {}", source, destination, date);
+                logger.info("Performing bus search operation");
                 buses = busService.searchBuses(source, destination, date);
             } else {
                 logger.info("Loading all active buses");
@@ -121,7 +121,7 @@ public class BusController {
             return BUSES_VIEW;
             
         } catch (Exception e) {
-            logger.error("Error loading buses: {}", e.getMessage(), e);
+            logger.error("Error loading buses: {}", e.getMessage());
             model.addAttribute(ERROR_ATTRIBUTE, "Error loading buses: " + e.getMessage());
             return BUSES_VIEW;
         }
@@ -148,7 +148,7 @@ public class BusController {
                 travelDate = LocalDate.now().plusDays(1).toString();
             }
 
-            logger.info("Loading booking form for: {}", bus.getBusName());
+            logger.info("Loading booking form for bus: {}", bus.getBusName());
             
             model.addAttribute(BUS_ATTRIBUTE, bus);
             model.addAttribute(USERNAME_ATTRIBUTE, username);
@@ -170,7 +170,7 @@ public class BusController {
                            @RequestParam int passengers,
                            Model model) {
         try {
-            logger.info("Adding to cart - Bus ID: {}, User: {}", busId, username);
+            logger.info("Adding to cart - Bus ID: {}", busId);
             
             Bus bus = busService.getBusById(busId);
             if (bus == null) {
@@ -197,12 +197,12 @@ public class BusController {
                     bus.getPrice() * passengers);
 
             cartService.addToCart(cart);
-            logger.info("Added to cart successfully for user: {}", username);
+            logger.info("Added to cart successfully");
             
             return REDIRECT_CART + "?" + USERNAME_ATTRIBUTE + "=" + username + "&message=Added to cart successfully!";
             
         } catch (Exception e) {
-            logger.error("Error adding to cart for user {}: {}", username, e.getMessage());
+            logger.error("Error adding to cart: {}", e.getMessage());
             model.addAttribute(ERROR_ATTRIBUTE, "Error adding to cart: " + e.getMessage());
             return REDIRECT_BUSES + "?" + USERNAME_ATTRIBUTE + "=" + username;
         }
@@ -214,7 +214,7 @@ public class BusController {
                           @RequestParam(required = false) String message,
                           @RequestParam(required = false) String error,
                           Model model) {
-        logger.info("Loading cart for user: {}", username);
+        logger.info("Loading cart");
         
         List<Cart> cartItems = cartService.getCartByUser(username);
         double total = cartService.getCartTotal(username);
@@ -232,7 +232,7 @@ public class BusController {
     // Remove from cart
     @GetMapping("/remove-from-cart/{id}")
     public String removeFromCart(@PathVariable Long id, @RequestParam String username) {
-        logger.info("Removing cart item ID: {} for user: {}", id, username);
+        logger.info("Removing cart item ID: {}", id);
         cartService.removeFromCart(id);
         return REDIRECT_CART + "?" + USERNAME_ATTRIBUTE + "=" + username + "&message=Item removed from cart!";
     }
@@ -240,13 +240,13 @@ public class BusController {
     // Show payment page
     @GetMapping("/payment")
     public String showPayment(@RequestParam String username, Model model) {
-        logger.info("Loading payment page for user: {}", username);
+        logger.info("Loading payment page");
         
         List<Cart> cartItems = cartService.getCartByUser(username);
         double total = cartService.getCartTotal(username);
         
         if (cartItems.isEmpty()) {
-            logger.warn("Cart is empty for user: {}", username);
+            logger.warn("Cart is empty");
             return REDIRECT_CART + "?" + USERNAME_ATTRIBUTE + "=" + username + "&error=Your cart is empty!";
         }
         
@@ -266,13 +266,13 @@ public class BusController {
                                HttpServletRequest request,
                                Model model) {
         try {
-            logger.info("Starting payment processing for: {}", username);
+            logger.info("Starting payment processing");
             
             // Get cart items
             List<Cart> cartItems = cartService.getCartByUser(username);
             
             if (cartItems.isEmpty()) {
-                logger.error("Cart is empty for user: {}", username);
+                logger.error("Cart is empty");
                 return REDIRECT_CART + "?" + USERNAME_ATTRIBUTE + "=" + username + "&error=Your cart is empty!";
             }
             
@@ -296,11 +296,11 @@ public class BusController {
             
             // Clear cart after successful payment
             cartService.clearCart(username);
-            logger.info("Cart cleared successfully for user: {}", username);
+            logger.info("Cart cleared successfully");
             
             // Log successful payment
-            logger.info("Payment Successful - User: {}, Amount: €{}, Method: {}, Tickets: {}", 
-                       username, total, paymentMethod, cartItems.size());
+            logger.info("Payment Successful - Amount: €{}, Method: {}, Tickets: {}", 
+                       total, paymentMethod, cartItems.size());
             
             // Add success attributes
             model.addAttribute(USERNAME_ATTRIBUTE, username);
@@ -313,7 +313,7 @@ public class BusController {
             return BOOKING_SUCCESS_VIEW;
             
         } catch (Exception e) {
-            logger.error("Payment processing error for user {}: {}", username, e.getMessage(), e);
+            logger.error("Payment processing error: {}", e.getMessage());
             return REDIRECT_PAYMENT + "?" + USERNAME_ATTRIBUTE + "=" + username + "&error=Payment processing failed. Please try again.";
         }
     }
@@ -324,10 +324,10 @@ public class BusController {
                             @RequestParam(required = false) String message,
                             Model model) {
         try {
-            logger.info("Loading bookings for user: {}", username);
+            logger.info("Loading bookings");
             
             List<Booking> bookings = bookingService.getBookingsByUser(username);
-            logger.info("Found {} bookings for user: {}", bookings.size(), username);
+            logger.info("Found {} bookings", bookings.size());
             
             model.addAttribute(BOOKINGS_ATTRIBUTE, bookings);
             model.addAttribute(USERNAME_ATTRIBUTE, username);
@@ -335,7 +335,7 @@ public class BusController {
             return MY_BOOKINGS_VIEW;
             
         } catch (Exception e) {
-            logger.error("Error loading bookings for user {}: {}", username, e.getMessage());
+            logger.error("Error loading bookings: {}", e.getMessage());
             model.addAttribute(ERROR_ATTRIBUTE, "Error loading bookings: " + e.getMessage());
             return REDIRECT_BUSES + "?" + USERNAME_ATTRIBUTE + "=" + username;
         }

@@ -2,6 +2,8 @@ package com.busbooking.system.controller;
 
 import com.busbooking.system.model.UserRequest;
 import com.busbooking.system.service.UserRequestService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,8 @@ import java.util.List;
 @Controller
 public class UserRequestController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserRequestController.class);
+
     @Autowired
     private UserRequestService requestService;
 
@@ -27,6 +31,7 @@ public class UserRequestController {
     // Show request form for users
     @GetMapping("/request-form")
     public String showRequestForm(@RequestParam String username, Model model) {
+        logger.info("Loading request form for user");
         model.addAttribute("username", username);
         model.addAttribute("requestTypes", REQUEST_TYPES);
         model.addAttribute("userRequest", new UserRequest());
@@ -40,17 +45,17 @@ public class UserRequestController {
                                @RequestParam String description,
                                Model model) {
         try {
-            System.out.println("📝 Submitting request for user: " + username);
+            logger.info("Submitting user request");
             
             UserRequest request = new UserRequest(username, requestType, description);
             UserRequest savedRequest = requestService.createRequest(request);
             
-            System.out.println("✅ Request submitted successfully with ID: " + savedRequest.getId());
+            logger.info("Request submitted successfully with ID: {}", savedRequest.getId());
             
             return "redirect:/my-requests?username=" + username + "&message=Request submitted successfully!";
             
         } catch (Exception e) {
-            System.out.println("❌ Failed to submit request: " + e.getMessage());
+            logger.error("Failed to submit request: {}", e.getMessage());
             return "redirect:/request-form?username=" + username + "&error=Failed to submit request: " + e.getMessage();
         }
     }
@@ -69,12 +74,12 @@ public class UserRequestController {
             if (message != null) model.addAttribute("message", message);
             if (error != null) model.addAttribute("error", error);
             
-            System.out.println("✅ Loaded " + requests.size() + " requests for user: " + username);
+            logger.info("Loaded {} requests for user", requests.size());
             
             return "my-requests";
             
         } catch (Exception e) {
-            System.out.println("❌ Error loading requests: " + e.getMessage());
+            logger.error("Error loading requests: {}", e.getMessage());
             model.addAttribute("error", "Error loading requests: " + e.getMessage());
             return "my-requests";
         }
