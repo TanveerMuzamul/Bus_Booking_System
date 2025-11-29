@@ -2,6 +2,8 @@ package com.busbooking.system.controller;
 
 import com.busbooking.system.model.User;
 import com.busbooking.system.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private UserService userService;
@@ -35,25 +39,25 @@ public class AuthController {
                         @RequestParam String password,
                         Model model) {
 
-        System.out.println("🔐 Login attempt - Username: " + username + ", Password: " + password);
+        logger.info("Login attempt");
 
         // 🔐 Admin login check
         if ("admin".equals(username) && "admin123".equals(password)) {
-            System.out.println("✅ Admin login successful");
+            logger.info("Admin login successful");
             return "redirect:/admin/dashboard";
         }
 
         // 🧾 Validate user credentials from DB
         boolean isValid = userService.validateUser(username, password);
-        System.out.println("👤 User validation result: " + isValid);
+        logger.info("User validation result: {}", isValid);
 
         if (isValid) {
-            System.out.println("✅ User login successful - Redirecting to user dashboard");
+            logger.info("User login successful - Redirecting to user dashboard");
             return "redirect:/dashboard?username=" + username; // Redirect to user dashboard
         }
 
         // ❌ Invalid credentials
-        System.out.println("❌ Login failed - Invalid credentials");
+        logger.info("Login failed - Invalid credentials");
         model.addAttribute("error", "Invalid username or password");
         return "login";
     }
@@ -69,15 +73,15 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute User user, Model model) {
         try {
-            System.out.println("👤 Registration attempt - Username: " + user.getUsername());
+            logger.info("Registration attempt - Username: {}", user.getUsername());
             
             userService.register(user);
-            System.out.println("✅ Registration successful");
+            logger.info("Registration successful");
             
             return "redirect:/login?success=Registration successful! Please login.";
             
         } catch (Exception e) {
-            System.out.println("❌ Registration failed: " + e.getMessage());
+            logger.error("Registration failed: {}", e.getMessage());
             model.addAttribute("error", "Registration failed: " + e.getMessage());
             model.addAttribute("user", user);
             return "register";
