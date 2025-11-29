@@ -5,7 +5,6 @@ import com.busbooking.system.model.User;
 import com.busbooking.system.service.BusService;
 import com.busbooking.system.service.UserRequestService;
 import com.busbooking.system.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,26 +21,39 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private BusService busService;
+    // String constants for duplicate literals
+    private static final String LOCATIONS_ATTRIBUTE = "locations";
+    private static final String BUS_TYPES_ATTRIBUTE = "busTypes";
+    private static final String DAYS_OF_WEEK_ATTRIBUTE = "daysOfWeek";
+    private static final String ADMIN_BUS_FORM_VIEW = "admin-bus-form";
+    private static final String SUCCESS_MESSAGE = "success";
+    private static final String REDIRECT_ADMIN_DASHBOARD = "redirect:/admin/dashboard";
+    private static final String ERROR_ATTRIBUTE = "error";
+    private static final String USER_ROLES_ATTRIBUTE = "userRoles";
+    private static final String REDIRECT_ADMIN_USERS = "redirect:/admin/users";
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRequestService userRequestService; // Added for request management
-
-    // Ireland locations
-    private final List<String> IRELAND_LOCATIONS = Arrays.asList(
+    // Ireland locations - fixed naming convention
+    private final List<String> irelandLocations = Arrays.asList(
         "Dublin", "Cork", "Galway", "Limerick", "Waterford", "Drogheda", 
         "Dundalk", "Swords", "Bray", "Navan", "Kilkenny", "Ennis", "Carlow",
         "Tralee", "Newbridge", "Portlaoise", "Balbriggan", "Naas", "Athlone",
         "Mullingar", "Wexford", "Letterkenny", "Sligo", "Greystones", "Clonmel"
     );
 
-    private final List<String> BUS_TYPES = Arrays.asList("STANDARD", "EXPRESS", "PREMIUM");
-    private final List<String> DAYS_OF_WEEK = Arrays.asList("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN");
-    private final List<String> USER_ROLES = Arrays.asList("USER", "ADMIN");
+    private final List<String> busTypes = Arrays.asList("STANDARD", "EXPRESS", "PREMIUM");
+    private final List<String> daysOfWeek = Arrays.asList("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN");
+    private final List<String> userRoles = Arrays.asList("USER", "ADMIN");
+
+    // Constructor injection instead of field injection
+    private final BusService busService;
+    private final UserService userService;
+    private final UserRequestService userRequestService;
+
+    public AdminController(BusService busService, UserService userService, UserRequestService userRequestService) {
+        this.busService = busService;
+        this.userService = userService;
+        this.userRequestService = userRequestService;
+    }
 
     // ==================== BUS MANAGEMENT ====================
 
@@ -57,10 +69,10 @@ public class AdminController {
     @GetMapping("/add-bus")
     public String addBusForm(Model model) {
         model.addAttribute("bus", new Bus());
-        model.addAttribute("locations", IRELAND_LOCATIONS);
-        model.addAttribute("busTypes", BUS_TYPES);
-        model.addAttribute("daysOfWeek", DAYS_OF_WEEK);
-        return "admin-bus-form";
+        model.addAttribute(LOCATIONS_ATTRIBUTE, irelandLocations);
+        model.addAttribute(BUS_TYPES_ATTRIBUTE, busTypes);
+        model.addAttribute(DAYS_OF_WEEK_ATTRIBUTE, daysOfWeek);
+        return ADMIN_BUS_FORM_VIEW;
     }
 
     // Save bus - FIXED: Proper form handling
@@ -90,15 +102,15 @@ public class AdminController {
             }
             
             busService.saveBus(bus);
-            model.addAttribute("success", "Bus saved successfully!");
-            return "redirect:/admin/dashboard";
+            model.addAttribute(SUCCESS_MESSAGE, "Bus saved successfully!");
+            return REDIRECT_ADMIN_DASHBOARD;
         } catch (Exception e) {
-            model.addAttribute("error", "Error saving bus: " + e.getMessage());
+            model.addAttribute(ERROR_ATTRIBUTE, "Error saving bus: " + e.getMessage());
             model.addAttribute("bus", bus);
-            model.addAttribute("locations", IRELAND_LOCATIONS);
-            model.addAttribute("busTypes", BUS_TYPES);
-            model.addAttribute("daysOfWeek", DAYS_OF_WEEK);
-            return "admin-bus-form";
+            model.addAttribute(LOCATIONS_ATTRIBUTE, irelandLocations);
+            model.addAttribute(BUS_TYPES_ATTRIBUTE, busTypes);
+            model.addAttribute(DAYS_OF_WEEK_ATTRIBUTE, daysOfWeek);
+            return ADMIN_BUS_FORM_VIEW;
         }
     }
 
@@ -106,7 +118,7 @@ public class AdminController {
     @GetMapping("/delete-bus/{id}")
     public String deleteBus(@PathVariable Long id) {
         busService.deleteBus(id);
-        return "redirect:/admin/dashboard";
+        return REDIRECT_ADMIN_DASHBOARD;
     }
 
     // Edit bus - FIXED: Proper editing
@@ -115,17 +127,17 @@ public class AdminController {
         try {
             Bus bus = busService.getBusById(id);
             if (bus == null) {
-                model.addAttribute("error", "Bus not found!");
-                return "redirect:/admin/dashboard";
+                model.addAttribute(ERROR_ATTRIBUTE, "Bus not found!");
+                return REDIRECT_ADMIN_DASHBOARD;
             }
             model.addAttribute("bus", bus);
-            model.addAttribute("locations", IRELAND_LOCATIONS);
-            model.addAttribute("busTypes", BUS_TYPES);
-            model.addAttribute("daysOfWeek", DAYS_OF_WEEK);
-            return "admin-bus-form";
+            model.addAttribute(LOCATIONS_ATTRIBUTE, irelandLocations);
+            model.addAttribute(BUS_TYPES_ATTRIBUTE, busTypes);
+            model.addAttribute(DAYS_OF_WEEK_ATTRIBUTE, daysOfWeek);
+            return ADMIN_BUS_FORM_VIEW;
         } catch (Exception e) {
-            model.addAttribute("error", "Error loading bus: " + e.getMessage());
-            return "redirect:/admin/dashboard";
+            model.addAttribute(ERROR_ATTRIBUTE, "Error loading bus: " + e.getMessage());
+            return REDIRECT_ADMIN_DASHBOARD;
         }
     }
 
@@ -137,7 +149,7 @@ public class AdminController {
         // Get all users from service
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
-        model.addAttribute("userRoles", USER_ROLES);
+        model.addAttribute(USER_ROLES_ATTRIBUTE, userRoles);
         return "admin-users";
     }
 
@@ -147,15 +159,15 @@ public class AdminController {
         try {
             User user = userService.getUserById(id);
             if (user == null) {
-                model.addAttribute("error", "User not found!");
-                return "redirect:/admin/users";
+                model.addAttribute(ERROR_ATTRIBUTE, "User not found!");
+                return REDIRECT_ADMIN_USERS;
             }
             model.addAttribute("user", user);
-            model.addAttribute("userRoles", USER_ROLES);
+            model.addAttribute(USER_ROLES_ATTRIBUTE, userRoles);
             return "admin-user-form";
         } catch (Exception e) {
-            model.addAttribute("error", "Error loading user: " + e.getMessage());
-            return "redirect:/admin/users";
+            model.addAttribute(ERROR_ATTRIBUTE, "Error loading user: " + e.getMessage());
+            return REDIRECT_ADMIN_USERS;
         }
     }
 
@@ -172,12 +184,12 @@ public class AdminController {
             }
             
             userService.saveUser(user);
-            model.addAttribute("success", "User updated successfully!");
-            return "redirect:/admin/users";
+            model.addAttribute(SUCCESS_MESSAGE, "User updated successfully!");
+            return REDIRECT_ADMIN_USERS;
         } catch (Exception e) {
-            model.addAttribute("error", "Error saving user: " + e.getMessage());
+            model.addAttribute(ERROR_ATTRIBUTE, "Error saving user: " + e.getMessage());
             model.addAttribute("user", user);
-            model.addAttribute("userRoles", USER_ROLES);
+            model.addAttribute(USER_ROLES_ATTRIBUTE, userRoles);
             return "admin-user-form";
         }
     }
@@ -186,7 +198,7 @@ public class AdminController {
     @GetMapping("/delete-user/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin/users";
+        return REDIRECT_ADMIN_USERS;
     }
 
     // ==================== REQUEST MANAGEMENT ====================
@@ -210,9 +222,9 @@ public class AdminController {
                                      Model model) {
         try {
             userRequestService.updateRequestStatus(requestId, status, adminResponse);
-            model.addAttribute("success", "Request updated successfully!");
+            model.addAttribute(SUCCESS_MESSAGE, "Request updated successfully!");
         } catch (Exception e) {
-            model.addAttribute("error", "Failed to update request: " + e.getMessage());
+            model.addAttribute(ERROR_ATTRIBUTE, "Failed to update request: " + e.getMessage());
         }
         return "redirect:/admin/requests";
     }
