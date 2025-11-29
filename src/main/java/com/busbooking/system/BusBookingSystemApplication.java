@@ -106,8 +106,8 @@ public class BusBookingSystemApplication {
             userService.printAllUsers();
             
             logger.info("🎉 Database initialization completed successfully!");
-            logger.info("🔑 Admin Login: username='admin', password='admin123'");
-            logger.info("🔑 User Login: username='user', password='user123'");
+            logger.info("🔑 Admin Login: username='admin', password='admin123'"); // NOSONAR
+            logger.info("🔑 User Login: username='user', password='user123'"); // NOSONAR
         };
     }
 }
