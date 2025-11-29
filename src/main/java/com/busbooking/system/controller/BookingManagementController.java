@@ -6,7 +6,6 @@ import com.busbooking.system.service.BookingService;
 import com.busbooking.system.service.BusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +22,14 @@ public class BookingManagementController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingManagementController.class);
 
-    @Autowired
-    private BookingService bookingService;
+    // Constructor injection instead of field injection
+    private final BookingService bookingService;
+    private final BusService busService;
 
-    @Autowired
-    private BusService busService;
+    public BookingManagementController(BookingService bookingService, BusService busService) {
+        this.bookingService = bookingService;
+        this.busService = busService;
+    }
 
     /**
      * View all bookings for management

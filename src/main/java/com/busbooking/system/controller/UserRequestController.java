@@ -4,7 +4,6 @@ import com.busbooking.system.model.UserRequest;
 import com.busbooking.system.service.UserRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +19,24 @@ public class UserRequestController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRequestController.class);
 
-    @Autowired
-    private UserRequestService requestService;
+    // Constructor injection instead of field injection
+    private final UserRequestService requestService;
 
-    // Available request types
-    private final List<String> REQUEST_TYPES = Arrays.asList(
+    // Available request types - fixed naming convention
+    private final List<String> requestTypes = Arrays.asList(
         "ACCOUNT_UPDATE", "REFUND_REQUEST", "COMPLAINT", "FEEDBACK", "OTHER"
     );
+
+    public UserRequestController(UserRequestService requestService) {
+        this.requestService = requestService;
+    }
 
     // Show request form for users
     @GetMapping("/request-form")
     public String showRequestForm(@RequestParam String username, Model model) {
         logger.info("Loading request form for user");
         model.addAttribute("username", username);
-        model.addAttribute("requestTypes", REQUEST_TYPES);
+        model.addAttribute("requestTypes", requestTypes);
         model.addAttribute("userRequest", new UserRequest());
         return "request-form";
     }
@@ -86,5 +89,5 @@ public class UserRequestController {
     }
 
     // NOTE: All admin endpoints (/admin/requests, /admin/update-request, /admin/delete-request) 
-    
+    // are now ONLY in AdminController to avoid conflicts
 }
