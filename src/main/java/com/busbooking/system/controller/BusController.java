@@ -318,7 +318,7 @@ public class BusController {
         }
     }
 
-    // My Bookings - FIXED: Proper implementation
+    
     @GetMapping("/my-bookings")
     public String myBookings(@RequestParam String username,
                             @RequestParam(required = false) String message,

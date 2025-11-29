@@ -86,5 +86,5 @@ public class UserRequestController {
     }
 
     // NOTE: All admin endpoints (/admin/requests, /admin/update-request, /admin/delete-request) 
-    // are now ONLY in AdminController to avoid conflicts
+    
 }
