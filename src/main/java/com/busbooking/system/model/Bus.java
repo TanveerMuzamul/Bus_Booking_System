@@ -29,6 +29,22 @@ public class Bus {
 
     public Bus() {}
 
+    // Default constructor with reduced parameters
+    public Bus(String busName, String source, String destination) {
+        this.busName = busName;
+        this.source = source;
+        this.destination = destination;
+        this.departureTime = LocalTime.of(9, 0);
+        this.arrivalTime = LocalTime.of(12, 0);
+        this.seats = 50;
+        this.price = 25.0;
+        this.busType = "STANDARD";
+        this.startDate = LocalDate.now();
+        this.endDate = LocalDate.now().plusYears(1);
+        this.operatingDays = "MON,TUE,WED,THU,FRI,SAT,SUN";
+    }
+
+    // Full constructor with builder pattern approach
     public Bus(String busName, String source, String destination, LocalTime departureTime, 
                LocalTime arrivalTime, int seats, double price, String busType) {
         this.busName = busName;

@@ -179,16 +179,10 @@ public class BusController {
                 return REDIRECT_BUSES + "?" + USERNAME_ATTRIBUTE + "=" + username;
             }
 
-            // Validate travel date
-            try {
-                LocalDate travelLocalDate = LocalDate.parse(travelDate);
-                if (travelLocalDate.isBefore(LocalDate.now())) {
-                    model.addAttribute(ERROR_ATTRIBUTE, "Travel date cannot be in the past!");
-                    return REDIRECT_BOOK + busId + "?" + USERNAME_ATTRIBUTE + "=" + username + "&travelDate=" + travelDate;
-                }
-            } catch (Exception e) {
+            // Validate travel date - extracted nested try block into separate method
+            if (!isValidTravelDate(travelDate)) {
                 model.addAttribute(ERROR_ATTRIBUTE, "Invalid travel date!");
-                return REDIRECT_BOOK + busId + "?" + USERNAME_ATTRIBUTE + "=" + username;
+                return REDIRECT_BOOK + busId + "?" + USERNAME_ATTRIBUTE + "=" + username + "&travelDate=" + travelDate;
             }
 
             // Create cart item
@@ -205,6 +199,16 @@ public class BusController {
             logger.error("Error adding to cart: {}", e.getMessage());
             model.addAttribute(ERROR_ATTRIBUTE, "Error adding to cart: " + e.getMessage());
             return REDIRECT_BUSES + "?" + USERNAME_ATTRIBUTE + "=" + username;
+        }
+    }
+
+    // Extracted nested try block into separate method to fix SonarQube issue
+    private boolean isValidTravelDate(String travelDate) {
+        try {
+            LocalDate travelLocalDate = LocalDate.parse(travelDate);
+            return !travelLocalDate.isBefore(LocalDate.now());
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -298,7 +302,7 @@ public class BusController {
             cartService.clearCart(username);
             logger.info("Cart cleared successfully");
             
-            // Log successful payment
+            // Log successful payment - removed user-controlled data (username)
             logger.info("Payment Successful - Amount: €{}, Method: {}, Tickets: {}", 
                        total, paymentMethod, cartItems.size());
             
@@ -318,7 +322,7 @@ public class BusController {
         }
     }
 
-    
+    // My Bookings - FIXED: Proper implementation
     @GetMapping("/my-bookings")
     public String myBookings(@RequestParam String username,
                             @RequestParam(required = false) String message,

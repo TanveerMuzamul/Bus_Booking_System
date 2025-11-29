@@ -21,6 +21,19 @@ public class Cart {
 
     public Cart() {}
 
+    // Default constructor with reduced parameters
+    public Cart(String username, Long busId, String busName) {
+        this.username = username;
+        this.busId = busId;
+        this.busName = busName;
+        this.source = "Dublin";
+        this.destination = "Galway";
+        this.travelDate = java.time.LocalDate.now().plusDays(1).toString();
+        this.passengers = 1;
+        this.totalPrice = 25.0;
+    }
+
+    // Full constructor
     public Cart(String username, Long busId, String busName, String source, 
                 String destination, String travelDate, int passengers, double totalPrice) {
         this.username = username;
