@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Booking | Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+        }
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .booking-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h3>📝 Admin Panel - Edit Booking</h3>
+        </div>
+
+        <h2>✏️ Edit Booking Details</h2>
+        
+        <div th:if="${error}" class="message error" th:text="${error}"></div>
+        <div th:if="${param.success}" class="message success" th:text="${param.success}"></div>
+        
+        <div class="booking-info">
+            <p><strong>Booking ID:</strong> <span th:text="${booking.id}"></span></p>
+            <p><strong>User:</strong> <span th:text="${booking.username}"></span></p>
+            <p><strong>Current Bus:</strong> <span th:text="${booking.busName}"></span></p>
+            <p><strong>Current Route:</strong> <span th:text="${booking.source + ' → ' + booking.destination}"></span></p>
+        </div>
+        
+        <!-- FIXED: Proper form action and method -->
+        <form th:action="@{/admin/update-booking}" method="post">
+            <input type="hidden" name="bookingId" th:value="${booking.id}">
+            
+            <div class="form-group">
+                <label>Select Bus:</label>
+                <select name="busId" required>
+                    <option value="">Select a Bus</option>
+                    <option th:each="bus : ${buses}" 
+                            th:value="${bus.id}" 
+                            th:selected="${booking.busName == bus.busName}"
+                            th:text="${bus.busName + ' (' + bus.source + ' → ' + bus.destination + ')'}"></option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Travel Date:</label>
+                <input type="date" name="travelDate" th:value="${booking.travelDate}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Number of Passengers:</label>
+                <input type="number" name="passengers" th:value="${booking.passengers}" min="1" max="10" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Booking Status:</label>
+                <select name="status" required>
+                    <option value="CONFIRMED" th:selected="${booking.status == 'CONFIRMED'}">CONFIRMED</option>
+                    <option value="PENDING" th:selected="${booking.status == 'PENDING'}">PENDING</option>
+                    <option value="CANCELLED" th:selected="${booking.status == 'CANCELLED'}">CANCELLED</option>
+                    <option value="COMPLETED" th:selected="${booking.status == 'COMPLETED'}">COMPLETED</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">💾 Update Booking</button>
+        </form>
+        
+        <div class="navigation">
+            <a href="/admin/bookings" class="nav-link">← Back to Bookings</a>
+            <a href="/admin/dashboard" class="nav-link">📊 Admin Dashboard →</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const passengers = document.querySelector('input[name="passengers"]').value;
+            const busId = document.querySelector('select[name="busId"]').value;
+            const travelDate = document.querySelector('input[name="travelDate"]').value;
+            
+            if (!busId) {
+                alert('Please select a bus');
+                e.preventDefault();
+                return false;
+            }
+            
+            if (!travelDate) {
+                alert('Please select a travel date');
+                e.preventDefault();
+                return false;
+            }
+            
+            if (passengers < 1 || passengers > 10) {
+                alert('Passengers must be between 1 and 10');
+                e.preventDefault();
+                return false;
+            }
+            
+            console.log('Form submitted successfully');
+            return true;
+        });
+    </script>
+</body>
+</html>
