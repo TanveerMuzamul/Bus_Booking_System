@@ -2,15 +2,17 @@ package com.busbooking.system.service;
 
 import com.busbooking.system.model.Booking;
 import com.busbooking.system.repository.BookingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    @Autowired
-    private BookingRepository bookingRepository;
+    private final BookingRepository bookingRepository;
+
+    public BookingServiceImpl(BookingRepository bookingRepository) {
+        this.bookingRepository = bookingRepository;
+    }
 
     @Override
     public Booking saveBooking(Booking booking) {

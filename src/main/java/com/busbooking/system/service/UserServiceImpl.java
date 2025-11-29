@@ -4,7 +4,6 @@ import com.busbooking.system.model.User;
 import com.busbooking.system.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -14,15 +13,20 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     
-    private static final String ROLE_LABEL = ", Role: ";
+    // Constants for duplicate string literals
+    private static final String ROLE_LABEL = "Role: ";
     private static final String USER_DETAILS_PREFIX = "User details - Username: ";
+    private static final String USER_FOUND_FORMAT = "{} {} {}";
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public boolean validateUser(String username, String password) {
-        logger.info("Validating user: {}", username);
+        logger.info("Validating user");
         
         try {
             // Method 1: Try findFirstByUsername
@@ -31,7 +35,7 @@ public class UserServiceImpl implements UserService {
                 User user = userOptional.get();
                 boolean passwordMatch = user.getPassword().equals(password);
                 logger.info("User found via findFirstByUsername - Password match: {}", passwordMatch);
-                logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
+                logger.info(USER_FOUND_FORMAT, USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                 return passwordMatch;
             }
             
@@ -41,7 +45,7 @@ public class UserServiceImpl implements UserService {
                 User user = users.get(0);
                 boolean passwordMatch = user.getPassword().equals(password);
                 logger.info("User found via findByUsername - Password match: {}", passwordMatch);
-                logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
+                logger.info(USER_FOUND_FORMAT, USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                 return passwordMatch;
             }
             
@@ -51,12 +55,12 @@ public class UserServiceImpl implements UserService {
                 if (user.getUsername().equals(username)) {
                     boolean passwordMatch = user.getPassword().equals(password);
                     logger.info("User found via findAll - Password match: {}", passwordMatch);
-                    logger.info("{} {}{}", USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
+                    logger.info(USER_FOUND_FORMAT, USER_DETAILS_PREFIX, user.getUsername(), ROLE_LABEL, user.getRole());
                     return passwordMatch;
                 }
             }
             
-            logger.info("User not found: {}", username);
+            logger.info("User not found");
             return false;
             
         } catch (Exception e) {

@@ -2,15 +2,17 @@ package com.busbooking.system.service;
 
 import com.busbooking.system.model.UserRequest;
 import com.busbooking.system.repository.UserRequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class UserRequestServiceImpl implements UserRequestService {
 
-    @Autowired
-    private UserRequestRepository userRequestRepository;
+    private final UserRequestRepository userRequestRepository;
+
+    public UserRequestServiceImpl(UserRequestRepository userRequestRepository) {
+        this.userRequestRepository = userRequestRepository;
+    }
 
     @Override
     public UserRequest createRequest(UserRequest request) {
