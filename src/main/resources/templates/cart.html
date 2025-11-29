@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .cart-empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .total-section {
+            text-align: right;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba87e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #ff9800 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .nav-link {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #ff9800 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,107,107,0.3);
+        }
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #666;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .message {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #dc3545;
+        }
+        .payment-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            👤 Welcome, <span th:text="${username}"></span>
+        </div>
+
+        <h2>🛒 Your Cart</h2>
+
+        <div th:if="${message}" class="message" th:text="${message}"></div>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <div th:if="${cartItems.empty}">
+            <div class="cart-empty">
+                <h3>Your cart is empty</h3>
+                <p>Add some bus tickets to get started!</p>
+                <a th:href="@{'/buses?username=' + ${username}}" class="btn">Browse Buses</a>
+            </div>
+        </div>
+
+        <div th:unless="${cartItems.empty}">
+            <table>
+                <tr>
+                    <th>Bus Name</th>
+                    <th>Route</th>
+                    <th>Travel Date</th>
+                    <th>Passengers</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+                <tr th:each="item : ${cartItems}">
+                    <td th:text="${item.busName}"></td>
+                    <td th:text="${item.source + ' to ' + item.destination}"></td>
+                    <td th:text="${item.travelDate}"></td>
+                    <td th:text="${item.passengers}"></td>
+                    <td>€<span th:text="${#numbers.formatDecimal(item.totalPrice, 1, 2)}"></span></td>
+                    <td>
+                        <a th:href="@{'/remove-from-cart/' + ${item.id} + '?username=' + ${username}}" 
+                           class="btn btn-danger">Remove</a>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="total-section">
+                <h3>Total Amount: <span class="total-amount">€<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></span></h3>
+            </div>
+
+            <div class="payment-section">
+                <a th:href="@{'/payment?username=' + ${username}}" class="btn btn-success">💳 Proceed to Payment</a>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a th:href="@{'/buses?username=' + ${username}}" class="nav-link">← Back to Buses</a>
+            <a th:href="@{'/my-bookings?username=' + ${username}}" class="nav-link">View My Bookings</a>
+            <a href="/login" class="nav-link">Logout</a>
+        </div>
+    </div>
+</body>
+</html>
