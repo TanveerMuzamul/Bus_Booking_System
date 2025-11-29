@@ -4,6 +4,7 @@ import com.busbooking.system.model.Bus;
 import com.busbooking.system.repository.BusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -15,11 +16,9 @@ import java.util.List;
 public class BusServiceImpl implements BusService {
 
     private static final Logger logger = LoggerFactory.getLogger(BusServiceImpl.class);
-    private final BusRepository busRepository;
 
-    public BusServiceImpl(BusRepository busRepository) {
-        this.busRepository = busRepository;
-    }
+    @Autowired
+    private BusRepository busRepository;
 
     @Override
     public List<Bus> getAllBuses() {
@@ -41,9 +40,10 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<Bus> searchBuses(String source, String destination, String date) {
+        // FIXED: Removed user-controlled data (source, destination, date) from log
         logger.info("Searching buses");
         
-        // SIMPLIFIED SEARCH
+        // SIMPLIFIED SEARCH - Just filter by source and destination for now
         List<Bus> allBuses = busRepository.findAll();
         
         List<Bus> filteredBuses = allBuses.stream()
@@ -88,7 +88,8 @@ public class BusServiceImpl implements BusService {
                 .map(Bus::getSource)
                 .distinct()
                 .toList();
-        logger.info("Available sources count: {}", sources.size());
+        // FIXED: Removed user-controlled data from log
+        logger.info("Retrieved available sources");
         return sources;
     }
 
@@ -98,7 +99,8 @@ public class BusServiceImpl implements BusService {
                 .map(Bus::getDestination)
                 .distinct()
                 .toList();
-        logger.info("Available destinations count: {}", destinations.size());
+        // FIXED: Removed user-controlled data from log
+        logger.info("Retrieved available destinations");
         return destinations;
     }
 }
