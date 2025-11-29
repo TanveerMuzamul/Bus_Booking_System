@@ -42,7 +42,7 @@ public class BusServiceImpl implements BusService {
     public List<Bus> searchBuses(String source, String destination, String date) {
         logger.info("Searching buses");
         
-        // SIMPLIFIED SEARCH - Just filter by source and destination for now
+        // SIMPLIFIED SEARCH
         List<Bus> allBuses = busRepository.findAll();
         
         List<Bus> filteredBuses = allBuses.stream()
