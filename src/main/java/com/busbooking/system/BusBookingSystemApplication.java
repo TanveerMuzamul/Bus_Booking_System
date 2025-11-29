@@ -5,6 +5,7 @@ import com.busbooking.system.model.User;
 import com.busbooking.system.repository.BusRepository;
 import com.busbooking.system.repository.UserRepository;
 import com.busbooking.system.service.UserService;
+// Logger imports for replacing System.out statements as per SonarQube recommendations
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class BusBookingSystemApplication {
                                   @Autowired UserRepository userRepo,
                                   @Autowired UserService userService) {
         return args -> {
-            // Clear existing data first to avoid duplicates
+            // Database initialization process - using logger for all output messages
             logger.info("🧹 Checking database...");
             
             // Add default buses
