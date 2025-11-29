@@ -21,20 +21,12 @@ public class Cart {
 
     public Cart() {}
 
-    // Alternative constructor with fewer parameters for SonarQube
     public Cart(String username, Long busId, String busName) {
-        this.username = username;
-        this.busId = busId;
-        this.busName = busName;
-        this.source = "Dublin";
-        this.destination = "Galway";
-        this.travelDate = java.time.LocalDate.now().plusDays(1).toString();
-        this.passengers = 1;
-        this.totalPrice = 25.0;
+        this(username, busId, busName, "Dublin", "Galway",
+                java.time.LocalDate.now().plusDays(1).toString(), 1, 25.0);
     }
 
-    // Existing constructor - ignore SonarQube warning for now
-    public Cart(String username, Long busId, String busName, String source, 
+    public Cart(String username, Long busId, String busName, String source,
                 String destination, String travelDate, int passengers, double totalPrice) {
         this.username = username;
         this.busId = busId;
@@ -46,36 +38,41 @@ public class Cart {
         this.totalPrice = totalPrice;
     }
 
-    // Getters and Setters
+    // ******** GETTERS & SETTERS ********
+
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
     public String getUsername() { return username; }
+
     public void setUsername(String username) { this.username = username; }
 
     public Long getBusId() { return busId; }
+
     public void setBusId(Long busId) { this.busId = busId; }
 
     public String getBusName() { return busName; }
+
     public void setBusName(String busName) { this.busName = busName; }
 
     public String getSource() { return source; }
+
     public void setSource(String source) { this.source = source; }
 
     public String getDestination() { return destination; }
+
     public void setDestination(String destination) { this.destination = destination; }
 
     public String getTravelDate() { return travelDate; }
+
     public void setTravelDate(String travelDate) { this.travelDate = travelDate; }
 
     public int getPassengers() { return passengers; }
+
     public void setPassengers(int passengers) { this.passengers = passengers; }
 
     public double getTotalPrice() { return totalPrice; }
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
 
-	public static Object builder(String username2, Long busId2, String busName2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
 }

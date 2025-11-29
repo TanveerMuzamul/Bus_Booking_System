@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Table(name = "booking")
 public class Booking {
 
-    // Constant for duplicate string literal
+    // Constants for status literals
     public static final String STATUS_CONFIRMED = "CONFIRMED";
     public static final String PAYMENT_STATUS_PAID = "PAID";
 
@@ -26,16 +26,23 @@ public class Booking {
     private double totalPrice;
     private String status = STATUS_CONFIRMED;
     private String paymentStatus = PAYMENT_STATUS_PAID;
-    
-    // Add this new field for admin notes
+
     @Column(length = 1000)
     private String adminNotes;
 
-    public Booking() {}
+    public Booking() {
+        // default constructor for JPA
+    }
 
-    // Updated constructor
-    public Booking(String username, String busName, String source, String destination, 
-                   LocalDate travelDate, int passengers, double totalPrice) {
+    // Main constructor used in BusController during payment
+    public Booking(String username,
+                   String busName,
+                   String source,
+                   String destination,
+                   LocalDate travelDate,
+                   int passengers,
+                   double totalPrice) {
+
         this.username = username;
         this.busName = busName;
         this.source = source;
@@ -48,8 +55,13 @@ public class Booking {
         this.paymentStatus = PAYMENT_STATUS_PAID;
     }
 
-    // Keep the old constructor for backward compatibility
-    public Booking(String username, String busName, String source, String destination, String bookingDate) {
+    // Secondary constructor (kept for backward compatibility)
+    public Booking(String username,
+                   String busName,
+                   String source,
+                   String destination,
+                   String bookingDate) {
+
         this.username = username;
         this.busName = busName;
         this.source = source;
@@ -62,40 +74,101 @@ public class Booking {
         this.paymentStatus = PAYMENT_STATUS_PAID;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters and setters
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getBusName() { return busName; }
-    public void setBusName(String busName) { this.busName = busName; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getSource() { return source; }
-    public void setSource(String source) { this.source = source; }
+    public String getUsername() {
+        return username;
+    }
 
-    public String getDestination() { return destination; }
-    public void setDestination(String destination) { this.destination = destination; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    public LocalDate getTravelDate() { return travelDate; }
-    public void setTravelDate(LocalDate travelDate) { this.travelDate = travelDate; }
+    public String getBusName() {
+        return busName;
+    }
 
-    public LocalDateTime getBookingDate() { return bookingDate; }
-    public void setBookingDate(LocalDateTime bookingDate) { this.bookingDate = bookingDate; }
+    public void setBusName(String busName) {
+        this.busName = busName;
+    }
 
-    public int getPassengers() { return passengers; }
-    public void setPassengers(int passengers) { this.passengers = passengers; }
+    public String getSource() {
+        return source;
+    }
 
-    public double getTotalPrice() { return totalPrice; }
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getDestination() {
+        return destination;
+    }
 
-    public String getPaymentStatus() { return paymentStatus; }
-    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
 
-    public String getAdminNotes() { return adminNotes; }
-    public void setAdminNotes(String adminNotes) { this.adminNotes = adminNotes; }
+    public LocalDate getTravelDate() {
+        return travelDate;
+    }
+
+    public void setTravelDate(LocalDate travelDate) {
+        this.travelDate = travelDate;
+    }
+
+    public LocalDateTime getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(LocalDateTime bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+
+    public int getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(int passengers) {
+        this.passengers = passengers;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getAdminNotes() {
+        return adminNotes;
+    }
+
+    public void setAdminNotes(String adminNotes) {
+        this.adminNotes = adminNotes;
+    }
 }
