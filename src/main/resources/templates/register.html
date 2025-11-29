@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Bus Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #ffeaea;
+            border-radius: 5px;
+            border: 1px solid #e74c3c;
+        }
+        .success {
+            color: #27ae60;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            border: 1px solid #27ae60;
+        }
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .security-info {
+            background: #e8f5e8;
+            color: #2d5016;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🧍 Create Account</h2>
+        <form th:action="@{/register}" method="post">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="tel" name="phoneNumber" placeholder="Phone Number (e.g., +353 87 123 4567)" required>
+            <button type="submit">Create Account</button>
+        </form>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+        <div th:if="${param.success}" class="success" th:text="${param.success}"></div>
+
+        <div class="security-info">
+            🔒 Your account information is secure and protected.
+        </div>
+
+        <div class="links">
+            <p>Already have an account? <a href="/login">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>
