@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage User | Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+        }
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h3>👥 Admin Panel - User Management</h3>
+        </div>
+
+        <h2>✏️ Edit User Details</h2>
+        
+        <div th:if="${success}" class="message success" th:text="${success}"></div>
+        <div th:if="${error}" class="message error" th:text="${error}"></div>
+        
+        <div class="user-info">
+            <p><strong>User ID:</strong> <span th:text="${user.id}"></span></p>
+            <p><strong>Registration Date:</strong> System User</p>
+        </div>
+        
+        <form th:action="@{/admin/save-user}" method="post">
+            <input type="hidden" th:name="id" th:value="${user.id}">
+            
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" th:name="username" th:value="${user.username}" required readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" th:name="email" th:value="${user.email}" placeholder="user@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number:</label>
+                <input type="tel" th:name="phoneNumber" th:value="${user.phoneNumber}" placeholder="+353 87 123 4567" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" th:name="password" th:value="${user.password}" placeholder="Leave empty to keep current" required>
+                <small>Enter new password or keep current one</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Role:</label>
+                <select th:name="role" required>
+                    <option th:each="role : ${userRoles}" 
+                            th:value="${role}" 
+                            th:selected="${user.role == role}"
+                            th:text="${role}"></option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">💾 Update User</button>
+        </form>
+        
+        <div class="navigation">
+            <a href="/admin/users" class="nav-link">← Back to User Management</a>
+            <a href="/admin/dashboard" class="nav-link">🚌 Manage Buses →</a>
+        </div>
+    </div>
+</body>
+</html>
